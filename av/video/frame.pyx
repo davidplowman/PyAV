@@ -41,8 +41,7 @@ cdef byteswap_array(array, bint big_endian):
 
 
 cdef copy_array_to_plane(array, VideoPlane plane, unsigned int bytes_per_pixel):
-    cdef bytes imgbytes = array.tobytes()
-    cdef const uint8_t[:] i_buf = imgbytes
+    cdef const uint8_t[:] i_buf = array.data.cast('c')
     cdef size_t i_pos = 0
     cdef size_t i_stride = plane.width * bytes_per_pixel
     cdef size_t i_size = plane.height * i_stride
@@ -55,6 +54,20 @@ cdef copy_array_to_plane(array, VideoPlane plane, unsigned int bytes_per_pixel):
         o_buf[o_pos:o_pos + i_stride] = i_buf[i_pos:i_pos + i_stride]
         i_pos += i_stride
         o_pos += o_stride
+
+
+cdef copy_array_to_plane_stride(array, VideoPlane plane, unsigned int width, unsigned int stride):
+    cdef const uint8_t[:] i_buf = array.data.cast('c')
+    cdef size_t i_pos = 0
+    cdef size_t i_size = plane.height * stride
+
+    cdef uint8_t[:] o_buf = plane
+    cdef size_t o_pos = 0
+
+    while i_pos < i_size:
+        o_buf[o_pos:o_pos + width] = i_buf[i_pos:i_pos + width]
+        i_pos += stride
+        o_pos += width
 
 
 cdef useful_array(VideoPlane plane, unsigned int bytes_per_pixel=1, str dtype='uint8'):
@@ -338,7 +351,7 @@ cdef class VideoFrame(Frame):
         return frame
 
     @staticmethod
-    def from_ndarray(array, format='rgb24'):
+    def from_ndarray(array, format='rgb24', width=None):
         """
         Construct a frame from a numpy array.
 
@@ -364,13 +377,16 @@ cdef class VideoFrame(Frame):
             check_ndarray_shape(array, array.shape[0] % 3 == 0)
             check_ndarray_shape(array, array.shape[1] % 2 == 0)
 
-            frame = VideoFrame(array.shape[1], (array.shape[0] * 2) // 3, format)
-            u_start = frame.width * frame.height
+            stride = array.shape[1]
+            if width is None:
+                width = stride
+            frame = VideoFrame(width, (array.shape[0] * 2) // 3, format)
+            u_start = stride * frame.height
             v_start = 5 * u_start // 4
             flat = array.reshape(-1)
-            copy_array_to_plane(flat[0:u_start], frame.planes[0], 1)
-            copy_array_to_plane(flat[u_start:v_start], frame.planes[1], 1)
-            copy_array_to_plane(flat[v_start:], frame.planes[2], 1)
+            copy_array_to_plane_stride(flat[0:u_start], frame.planes[0], width, stride)
+            copy_array_to_plane_stride(flat[u_start:v_start], frame.planes[1], width // 2, stride // 2)
+            copy_array_to_plane_stride(flat[v_start:], frame.planes[2], width // 2, stride // 2)
             return frame
         elif format == 'yuyv422':
             check_ndarray(array, 'uint8', 3)
