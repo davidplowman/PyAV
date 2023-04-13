@@ -169,3 +169,17 @@ cdef class VideoCodecContext(CodecContext):
 
         def __set__(self, value):
             self.ptr.max_b_frames = value
+
+    property qmin:
+        def __get__(self):
+            return self.ptr.qmin
+
+        def __set__(self, value):
+            self.ptr.qmin = value
+
+    property qmax:
+        def __get__(self):
+            return self.ptr.qmax
+
+        def __set__(self, value):
+            self.ptr.qmax = value
