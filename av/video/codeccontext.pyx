@@ -183,3 +183,10 @@ cdef class VideoCodecContext(CodecContext):
 
         def __set__(self, value):
             self.ptr.qmax = value
+
+    property color_range:
+        def __get__(self):
+            return self.ptr.color_range
+
+        def __set__(self, value):
+            self.ptr.color_range = value

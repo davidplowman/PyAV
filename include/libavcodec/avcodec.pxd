@@ -125,6 +125,11 @@ cdef extern from "libavcodec/avcodec.h" nogil:
         AVDISCARD_NONKEY
         AVDISCARD_ALL
 
+    cdef enum AVColorRange:
+        AVCOL_RANGE_UNSPECIFIED
+        AVCOL_RANGE_MPEG
+        AVCOL_RANGE_JPEG
+
     cdef struct AVCodec:
 
         char *name
@@ -184,6 +189,8 @@ cdef extern from "libavcodec/avcodec.h" nogil:
         int compression_level
 
         int frame_number
+
+        AVColorRange color_range
 
         int qmin
         int qmax
