@@ -150,12 +150,18 @@ cdef extern from "libavcodec/avcodec.h" nogil:
     cdef int av_codec_is_encoder(AVCodec*)
     cdef int av_codec_is_decoder(AVCodec*)
 
+    cdef struct AVProfile:
+
+        int profile
+        char *name
+
     cdef struct AVCodecDescriptor:
         AVCodecID id
         char *name
         char *long_name
         int props
         char **mime_types
+        AVProfile *profiles
 
     AVCodecDescriptor* avcodec_descriptor_get(AVCodecID)
 
@@ -245,13 +251,6 @@ cdef extern from "libavcodec/avcodec.h" nogil:
     cdef void avcodec_free_context(AVCodecContext **ctx)
 
     cdef AVClass* avcodec_get_class()
-
-    cdef struct AVCodecDescriptor:
-        AVCodecID id
-        AVMediaType type
-        char *name
-        char *long_name
-        int props
 
     cdef AVCodec* avcodec_find_decoder(AVCodecID id)
     cdef AVCodec* avcodec_find_encoder(AVCodecID id)

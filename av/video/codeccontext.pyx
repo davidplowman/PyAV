@@ -190,3 +190,10 @@ cdef class VideoCodecContext(CodecContext):
 
         def __set__(self, value):
             self.ptr.color_range = value
+
+    property profile:
+        def __get__(self):
+            return self.ptr.profile
+
+        def __set__(self, value):
+            self.ptr.profile = value

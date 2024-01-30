@@ -289,6 +289,20 @@ cdef class Codec(object):
             i += 1
         return ret
 
+    @property
+    def profiles(self):
+        """Return the available codec profiles, which are now stored in the
+        AVCodecDescriptor."""
+        if not self.desc:
+            return
+
+        ret = {}
+        cdef int i = 0
+        while self.desc.profiles[i].profile != -99:
+            ret[self.desc.profiles[i].name] = self.desc.profiles[i].profile
+            i += 1
+        return ret
+
     # NOTE: there are some overlaps, which we defer to how `ffmpeg -codecs`
     # handles them (by prefering the capablity to the property).
     # Also, LOSSLESS and LOSSY don't have to agree.
