@@ -56,6 +56,23 @@ cdef copy_array_to_plane(array, VideoPlane plane, unsigned int bytes_per_pixel):
         o_pos += o_stride
 
 
+cdef copy_array_to_plane_non_contiguous(array, VideoPlane plane, unsigned int bytes_per_pixel):
+    cdef const uint8_t[:] i_buf = array.base.data.cast('c')
+    cdef size_t i_pos = 0
+    cdef size_t i_bytes = plane.width * bytes_per_pixel
+    cdef size_t i_stride = array.data.strides[0]
+    cdef size_t i_size = plane.height * i_stride
+
+    cdef uint8_t[:] o_buf = plane
+    cdef size_t o_pos = 0
+    cdef size_t o_stride = abs(plane.line_size)
+
+    while i_pos < i_size:
+        o_buf[o_pos:o_pos + i_bytes] = i_buf[i_pos:i_pos + i_bytes]
+        i_pos += i_stride
+        o_pos += o_stride
+
+
 cdef copy_array_to_plane_stride(array, VideoPlane plane, unsigned int width, unsigned int stride):
     cdef const uint8_t[:] i_buf = array.data.cast('c')
     cdef size_t i_pos = 0
@@ -63,11 +80,12 @@ cdef copy_array_to_plane_stride(array, VideoPlane plane, unsigned int width, uns
 
     cdef uint8_t[:] o_buf = plane
     cdef size_t o_pos = 0
+    cdef size_t o_stride = abs(plane.line_size)
 
     while i_pos < i_size:
         o_buf[o_pos:o_pos + width] = i_buf[i_pos:i_pos + width]
         i_pos += stride
-        o_pos += width
+        o_pos += o_stride
 
 
 cdef useful_array(VideoPlane plane, unsigned int bytes_per_pixel=1, str dtype='uint8'):
@@ -460,6 +478,12 @@ cdef class VideoFrame(Frame):
             raise ValueError('Conversion from numpy array with format `%s` is not yet supported' % format)
 
         frame = VideoFrame(array.shape[1], array.shape[0], format)
-        copy_array_to_plane(array, frame.planes[0], 1 if array.ndim == 2 else array.shape[2])
+
+        bytes_per_pixel = 1 if array.ndim == 2 else array.shape[2]
+        if (not array.data.c_contiguous) and (not array.base is None) and array.base.data.c_contiguous:
+            # Should still be able to copy from the input buffer if we use the correct input stride.
+            copy_array_to_plane_non_contiguous(array, frame.planes[0], bytes_per_pixel)
+        else:
+            copy_array_to_plane(array, frame.planes[0], bytes_per_pixel)
 
         return frame
