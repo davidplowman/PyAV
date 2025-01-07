@@ -77,7 +77,8 @@ cdef class FilterContext:
     
     @property
     def graph(self):
-        if (graph := self._graph()):
+        graph = self._graph()
+        if graph:
             return graph
         else:
             raise RuntimeError("graph is unallocated")
