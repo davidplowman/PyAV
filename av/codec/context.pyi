@@ -63,6 +63,8 @@ class CodecContext:
     options: dict[str, str]
     type: Literal["video", "audio", "data", "subtitle", "attachment"]
     profile: str | None
+    @property
+    def profiles(self) -> list[str]: ...
     time_base: Fraction
     codec_tag: str
     bit_rate: int | None
