@@ -504,6 +504,19 @@ class TestVideoFrameNumpyBuffer(TestCase):
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
+        array = array[:, :300]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "gray")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
     def test_shares_memory_gray8(self):
         array = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
         frame = VideoFrame.from_numpy_buffer(array, "gray8")
@@ -511,6 +524,19 @@ class TestVideoFrameNumpyBuffer(TestCase):
 
         # overwrite the array, the contents thereof
         array[...] = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
+        array = array[:, :300]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "gray8")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
@@ -524,6 +550,19 @@ class TestVideoFrameNumpyBuffer(TestCase):
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
+        array = array[:, :300]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "rgb8")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
     def test_shares_memory_bgr8(self):
         array = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
         frame = VideoFrame.from_numpy_buffer(array, "bgr8")
@@ -534,6 +573,19 @@ class TestVideoFrameNumpyBuffer(TestCase):
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318), dtype=numpy.uint8)
+        array = array[:, :300]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "bgr8")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
     def test_shares_memory_rgb24(self):
         array = numpy.random.randint(0, 256, size=(357, 318, 3), dtype=numpy.uint8)
         frame = VideoFrame.from_numpy_buffer(array, "rgb24")
@@ -541,6 +593,42 @@ class TestVideoFrameNumpyBuffer(TestCase):
 
         # overwrite the array, the contents thereof
         array[...] = numpy.random.randint(0, 256, size=(357, 318, 3), dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318, 3), dtype=numpy.uint8)
+        array = array[:, :300, :]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "rgb24")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+    def test_shares_memory_rgba(self) -> None:
+        array = numpy.random.randint(0, 256, size=(357, 318, 4), dtype=numpy.uint8)
+        frame = VideoFrame.from_numpy_buffer(array, "rgba")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=(357, 318, 4), dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318, 4), dtype=numpy.uint8)
+        array = array[:, :300, :]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "rgba")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
@@ -556,6 +644,38 @@ class TestVideoFrameNumpyBuffer(TestCase):
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
+        # repeat the test, but with an array where there are some padding bytes
+        # note that the uv rows have half the padding in the middle of a row, and the
+        # other half at the end
+        height = 512
+        stride = 256
+        width = 200
+        array = numpy.random.randint(
+            0, 256, size=(height * 6 // 4, stride), dtype=numpy.uint8
+        )
+        uv_width = width // 2
+        uv_stride = stride // 2
+
+        # compare carefully, avoiding all the padding bytes which to_ndarray strips out
+        frame = VideoFrame.from_numpy_buffer(array, "yuv420p", width=width)
+        frame_array = frame.to_ndarray()
+        self.assertNdarraysEqual(frame_array[:height, :width], array[:height, :width])
+        self.assertNdarraysEqual(frame_array[height:, :uv_width], array[height:, :uv_width])
+        self.assertNdarraysEqual(
+            frame_array[height:, uv_width:],
+            array[height:, uv_stride : uv_stride + uv_width],
+        )
+
+        # overwrite the array, and check the shared frame buffer changed too!
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        frame_array = frame.to_ndarray()
+        self.assertNdarraysEqual(frame_array[:height, :width], array[:height, :width])
+        self.assertNdarraysEqual(frame_array[height:, :uv_width], array[height:, :uv_width])
+        self.assertNdarraysEqual(
+            frame_array[height:, uv_width:],
+            array[height:, uv_stride : uv_stride + uv_width],
+        )
+
     def test_shares_memory_yuvj420p(self):
         array = numpy.random.randint(
             0, 256, size=(512 * 6 // 4, 256), dtype=numpy.uint8
@@ -568,10 +688,53 @@ class TestVideoFrameNumpyBuffer(TestCase):
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
+        # repeat the test with padding, just as we did in the yuv420p case
+        height = 512
+        stride = 256
+        width = 200
+        array = numpy.random.randint(
+            0, 256, size=(height * 6 // 4, stride), dtype=numpy.uint8
+        )
+        uv_width = width // 2
+        uv_stride = stride // 2
+
+        # compare carefully, avoiding all the padding bytes which to_ndarray strips out
+        frame = VideoFrame.from_numpy_buffer(array, "yuvj420p", width=width)
+        frame_array = frame.to_ndarray()
+        self.assertNdarraysEqual(frame_array[:height, :width], array[:height, :width])
+        self.assertNdarraysEqual(frame_array[height:, :uv_width], array[height:, :uv_width])
+        self.assertNdarraysEqual(
+            frame_array[height:, uv_width:],
+            array[height:, uv_stride : uv_stride + uv_width],
+        )
+
+        # overwrite the array, and check the shared frame buffer changed too!
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        frame_array = frame.to_ndarray()
+        self.assertNdarraysEqual(frame_array[:height, :width], array[:height, :width])
+        self.assertNdarraysEqual(frame_array[height:, :uv_width], array[height:, :uv_width])
+        self.assertNdarraysEqual(
+            frame_array[height:, uv_width:],
+            array[height:, uv_stride : uv_stride + uv_width],
+        )
+
     def test_shares_memory_nv12(self):
         array = numpy.random.randint(
             0, 256, size=(512 * 6 // 4, 256), dtype=numpy.uint8
         )
+        frame = VideoFrame.from_numpy_buffer(array, "nv12")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(512 * 6 // 4, 256), dtype=numpy.uint8)
+        array = array[:, :200]
+        self.assertFalse(array.data.c_contiguous)
         frame = VideoFrame.from_numpy_buffer(array, "nv12")
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
@@ -587,6 +750,42 @@ class TestVideoFrameNumpyBuffer(TestCase):
 
         # overwrite the array, the contents thereof
         array[...] = numpy.random.randint(0, 256, size=(357, 318, 3), dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318, 3), dtype=numpy.uint8)
+        array = array[:, :300, :]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "bgr24")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+    def test_shares_memory_bgra(self) -> None:
+        array = numpy.random.randint(0, 256, size=(357, 318, 4), dtype=numpy.uint8)
+        frame = VideoFrame.from_numpy_buffer(array, "bgra")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=(357, 318, 4), dtype=numpy.uint8)
+        # Make sure the frame reflects that
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # repeat the test, but with an array that is not fully contiguous, though the
+        # pixels in a row are
+        array = numpy.random.randint(0, 256, size=(357, 318, 4), dtype=numpy.uint8)
+        array = array[:, :300, :]
+        self.assertFalse(array.data.c_contiguous)
+        frame = VideoFrame.from_numpy_buffer(array, "bgra")
+        self.assertNdarraysEqual(frame.to_ndarray(), array)
+
+        # overwrite the array, the contents thereof
+        array[...] = numpy.random.randint(0, 256, size=array.shape, dtype=numpy.uint8)
         # Make sure the frame reflects that
         self.assertNdarraysEqual(frame.to_ndarray(), array)
 
